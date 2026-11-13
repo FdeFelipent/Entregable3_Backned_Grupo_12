@@ -33,7 +33,6 @@ biocaqueta-app/
 │   └── app.js
 ├── postman/BioCaqueta.postman_collection.json
 ├── .env                  # Solo local, no se publica
-├── .env.example
 ├── .gitignore
 ├── package.json
 ├── package-lock.json
@@ -50,14 +49,6 @@ Se utilizó Node.js 24.22.0. Desde la carpeta que contiene `package.json`:
 ```powershell
 npm.cmd install
 ```
-
-Si aún no existe `.env`, copia `.env.example` como `.env`. Configura tu conexión de Atlas en `MONGODB_URI` y el puerto en `PORT`. No sobrescribas un `.env` ya configurado.
-
-```dotenv
-MONGODB_URI="mongodb+srv://USUARIO:CLAVE_CODIFICADA@TU_CLUSTER.mongodb.net/biocaqueta_db?retryWrites=true&w=majority"
-PORT=3000
-```
-
 ```powershell
 npm.cmd run dev
 ```
