@@ -1,0 +1,463 @@
+{
+  "info": {
+    "name": "BioCaquetá | Taller Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Inicia la app y ejecuta las solicitudes en orden. El POST guarda avistamientoId automáticamente. Los registros son ejemplos de práctica. Revisa Atlas antes de ejecutar DELETE. La carpeta de formularios debe ejecutarse en su propio orden."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "avistamientoId",
+      "value": ""
+    },
+    {
+      "key": "formularioId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "01 · Recorrido CRUD (ejecutar en orden)",
+      "item": [
+        {
+          "name": "1. Listar avistamientos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/avistamientos"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Devuelve una lista\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. Crear avistamiento y guardar ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/avistamientos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreComun\": \"Guacamaya bandera\",\n  \"nombreCientifico\": \"Ara macao\",\n  \"categoria\": \"Ave\",\n  \"zona\": \"Río Hacha\",\n  \"investigador\": \"REEMPLAZA POR TU NOMBRE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+                  "const registro = pm.response.json();",
+                  "pm.test(\"Documento creado\", () => pm.expect(registro._id).to.match(/^[a-f0-9]{24}$/));",
+                  "pm.test(\"Estado por defecto\", () => pm.expect(registro.estadoConservacion).to.eql(\"Preocupación menor\"));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"avistamientoId\", registro._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3. Filtrar aves",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/avistamientos?categoria=Ave"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Solo aves\", () => pm.response.json().forEach(r => pm.expect(r.categoria).to.eql(\"Ave\")));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4. Actualizar zona y estado",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/avistamientos/{{avistamientoId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"zona\": \"El Caraño\",\n  \"estadoConservacion\": \"Vulnerable\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Zona actualizada\", () => pm.expect(pm.response.json().zona).to.eql(\"El Caraño\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "5. Consultar cambios (revisar también Atlas)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/avistamientos"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "6. Eliminar registro de prueba",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/avistamientos/{{avistamientoId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "7. Comprobar 404 al eliminar de nuevo",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/avistamientos/{{avistamientoId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 · Validación de errores",
+      "item": [
+        {
+          "name": "Faltan campos obligatorios",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/avistamientos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreComun\": \"Danta\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Categoría inválida",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/avistamientos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreComun\": \"Guacamaya bandera\",\n  \"nombreCientifico\": \"Ara macao\",\n  \"categoria\": \"Pez\",\n  \"zona\": \"Río Hacha\",\n  \"investigador\": \"REEMPLAZA POR TU NOMBRE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Identificador inválido",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/avistamientos/id-invalido"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtro inválido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/avistamientos?categoria=Insecto"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 · Formularios HTML (ejecutar en orden)",
+      "item": [
+        {
+          "name": "1. Crear como formulario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "url": "{{baseUrl}}/api/avistamientos",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "nombreComun",
+                  "value": "Ave de prueba formulario",
+                  "type": "text"
+                },
+                {
+                  "key": "nombreCientifico",
+                  "value": "Ara macao",
+                  "type": "text"
+                },
+                {
+                  "key": "categoria",
+                  "value": "Ave",
+                  "type": "text"
+                },
+                {
+                  "key": "zona",
+                  "value": "Río Hacha",
+                  "type": "text"
+                },
+                {
+                  "key": "investigador",
+                  "value": "REEMPLAZA POR TU NOMBRE",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 303\", () => pm.response.to.have.status(303));",
+                  "pm.test(\"Redirige al inicio\", () => pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/\"));"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "2. Obtener ID del registro de formulario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/avistamientos?categoria=Ave"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const registro = pm.response.json().find(r => r.nombreComun === \"Ave de prueba formulario\");",
+                  "pm.test(\"Existe el registro\", () => pm.expect(registro).to.be.an(\"object\"));",
+                  "if (registro) pm.collectionVariables.set(\"formularioId\", registro._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3. Actualizar como formulario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "url": "{{baseUrl}}/api/avistamientos/update/{{formularioId}}",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "zona",
+                  "value": "El Caraño",
+                  "type": "text"
+                },
+                {
+                  "key": "estadoConservacion",
+                  "value": "En peligro",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 303\", () => pm.response.to.have.status(303));"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "4. Eliminar como formulario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "url": "{{baseUrl}}/api/avistamientos/delete/{{formularioId}}",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": []
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 303\", () => pm.response.to.have.status(303));"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+<section class="intro">
+  <p class="etiqueta">OBSERVAR · REGISTRAR · CONSERVAR</p>
+  <h1>La biodiversidad,<br><em>en un mismo lugar.</em></h1>
+  <p class="bajada">Un cuaderno de campo para registrar la fauna y flora del Piedemonte Amazónico.</p>
+</section>
+
+<section class="panel registro" aria-labelledby="nuevo-titulo">
+  <div class="encabezado-panel"><div><p class="etiqueta">01 / REGISTRO</p><h2 id="nuevo-titulo">Nuevo avistamiento</h2></div><span class="nota">* Campos obligatorios</span></div>
+  <form action="/api/avistamientos" method="POST" class="formulario">
+    <div class="campo"><label for="nombreComun">Nombre común *</label><input id="nombreComun" name="nombreComun" placeholder="Ej. Danta amazónica" required></div>
+    <div class="campo"><label for="nombreCientifico">Nombre científico *</label><input id="nombreCientifico" name="nombreCientifico" placeholder="Ej. Tapirus terrestris" required></div>
+    <div class="campo"><label for="categoria">Categoría *</label><select id="categoria" name="categoria" required><option value="">Selecciona una categoría</option>{{#each categorias}}<option value="{{this}}">{{this}}</option>{{/each}}</select></div>
+    <div class="campo"><label for="zona">Zona del avistamiento *</label><input id="zona" name="zona" placeholder="Ej. Río Hacha" required></div>
+    <div class="campo"><label for="estadoConservacion">Estado de conservación</label><select id="estadoConservacion" name="estadoConservacion">{{#each estados}}<option value="{{this}}">{{this}}</option>{{/each}}</select></div>
+    <div class="campo"><label for="investigador">Investigador/a *</label><input id="investigador" name="investigador" placeholder="Nombre de quien reporta" required></div>
+    <div class="acciones-form"><p class="nota">La fecha de registro se guarda automáticamente.</p><button class="boton principal" type="submit">Registrar avistamiento <span aria-hidden="true">↗</span></button></div>
+  </form>
+</section>
+
+<section class="registros" aria-labelledby="listado-titulo">
+  <div class="encabezado-listado"><div><p class="etiqueta">02 / CUADERNO DE CAMPO</p><h2 id="listado-titulo">Avistamientos <span class="contador">{{total}}</span></h2></div>
+    <form action="/" method="GET" class="filtro"><label for="filtroCategoria">Categoría</label><select id="filtroCategoria" name="categoria"><option value="">Todas</option>{{#each categorias}}<option value="{{this}}" {{#if (igual this ../categoriaFiltro)}}selected{{/if}}>{{this}}</option>{{/each}}</select><button type="submit" class="boton secundario">Filtrar</button></form>
+  </div>
+  {{#if avistamientos}}
+    <div class="tarjetas">
+      {{#each avistamientos}}
+      <article class="tarjeta">
+        <div class="cabecera-tarjeta"><span class="categoria">{{categoria}}</span><span class="estado {{claseEstado estadoConservacion}}">{{estadoConservacion}}</span></div>
+        <h3>{{nombreComun}}</h3><p class="cientifico">{{nombreCientifico}}</p>
+        <dl><div><dt>Zona</dt><dd>{{zona}}</dd></div><div><dt>Reportado por</dt><dd>{{investigador}}</dd></div><div><dt>Registrado</dt><dd>{{fecha fechaRegistro}}</dd></div></dl>
+        <div class="acciones-tarjeta"><a class="editar" href="/editar/{{_id}}">Editar registro <span aria-hidden="true">↗</span></a><form action="/api/avistamientos/delete/{{_id}}" method="POST" data-confirmar="¿Eliminar este avistamiento? Esta acción no se puede deshacer."><button type="submit" class="eliminar">Eliminar</button></form></div>
+      </article>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="vacio"><span class="simbolo" aria-hidden="true">+</span><h3>{{#if categoriaFiltro}}No hay registros en esta categoría{{else}}Tu próxima observación empieza aquí{{/if}}</h3><p>{{#if categoriaFiltro}}Prueba con otra categoría o registra un nuevo avistamiento.{{else}}Completa el formulario para guardar el primer avistamiento.{{/if}}</p></div>
+  {{/if}}
+</section>

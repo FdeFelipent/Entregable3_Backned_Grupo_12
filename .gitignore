@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.*
+*.env
+!.env.example
+coverage/
+*.log
+.cache/
+.DS_Store
+
+.postman/
+
+postman/collections/
+
+postman/globals/

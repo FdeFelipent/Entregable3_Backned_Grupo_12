@@ -1,0 +1,10 @@
+<section class="intro intro-editar"><a class="volver" href="/">← Volver al cuaderno</a><p class="etiqueta">ACTUALIZACIÓN DE CAMPO</p><h1>Editar <em>avistamiento.</em></h1><p class="bajada">Actualiza la zona y el estado de conservación del registro.</p></section>
+<section class="panel panel-editar" aria-labelledby="especie-titulo">
+  <div class="encabezado-panel"><div><span class="categoria">{{avistamiento.categoria}}</span><h2 id="especie-titulo">{{avistamiento.nombreComun}}</h2><p class="cientifico">{{avistamiento.nombreCientifico}}</p></div></div>
+  <dl class="resumen"><div><dt>Investigador/a</dt><dd>{{avistamiento.investigador}}</dd></div><div><dt>Fecha de registro</dt><dd>{{fecha avistamiento.fechaRegistro}}</dd></div></dl>
+  <form action="/api/avistamientos/update/{{avistamiento._id}}" method="POST" class="formulario dos-columnas">
+    <div class="campo"><label for="zona">Zona del avistamiento *</label><input id="zona" name="zona" value="{{avistamiento.zona}}" required></div>
+    <div class="campo"><label for="estadoConservacion">Estado de conservación *</label><select id="estadoConservacion" name="estadoConservacion" required>{{#each estados}}<option value="{{this}}" {{#if (igual this ../avistamiento.estadoConservacion)}}selected{{/if}}>{{this}}</option>{{/each}}</select></div>
+    <div class="acciones-form"><a href="/" class="boton secundario">Cancelar</a><button class="boton principal" type="submit">Guardar cambios <span aria-hidden="true">↗</span></button></div>
+  </form>
+</section>
