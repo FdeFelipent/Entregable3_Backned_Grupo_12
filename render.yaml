@@ -1,6 +1,7 @@
 services:
   - type: web
-    name: biocaqueta-app
+    name: biocaqueta-grupo-12
+    region: virginia
     runtime: node
     plan: free
     buildCommand: npm ci --omit=dev

@@ -2,6 +2,11 @@
 
 Aplicación del taller de Backend para registrar avistamientos de fauna y flora del Piedemonte Amazónico. Incluye una API REST y vistas Handlebars conectadas a MongoDB Atlas.
 
+## Enlaces
+
+- Aplicación: https://biocaqueta-grupo-12.onrender.com
+- Repositorio: https://github.com/FdeFelipent/Entregable3_Backned_Grupo_12
+
 ## Tecnologías
 
 Node.js, Express, express.Router, Mongoose, MongoDB Atlas y Express-Handlebars. La colección de Postman está en `postman/BioCaqueta.postman_collection.json`.
